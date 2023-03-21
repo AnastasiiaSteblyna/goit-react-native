@@ -42,7 +42,7 @@ export default function LoginScreen({ navigation }) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
         style={styles.image}
-        source={require("../../assets/images/bg-image.png")}
+        source={require("../assets/images/bg.png")}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "heigth"}
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     borderColor: "#E8E8E8",
     backgroundColor: "#F6F6F6",
     borderRadius: 8,
-    heigth: 50,
+    height: 50,
     marginBottom: 16,
     paddingLeft: 16,
   },
@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Light",
   },
   containerLink: {
     alignItems: "center",

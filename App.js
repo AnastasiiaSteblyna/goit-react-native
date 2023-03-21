@@ -19,7 +19,7 @@ export default function App() {
       try {
         await Font.loadAsync({
           "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
-          "Roboto-light": require("./assets/fonts/Roboto-Light.ttf"),
+          "Roboto-Light": require("./assets/fonts/Roboto-Light.ttf"),
         });
       } catch (e) {
         console.warn(e);

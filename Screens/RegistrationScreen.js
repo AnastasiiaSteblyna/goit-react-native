@@ -43,10 +43,10 @@ export default function RegistrationScreen({ navigation }) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <ImageBackground
         style={styles.image}
-        source={require("../../assets/images/bg-image.png")}
+        source={require("../assets/images/bg.png")}
       >
         <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "heigth"}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
           <View style={styles.container}>
             <View style={{ ...styles.form, width: dimensions }}>
@@ -118,7 +118,8 @@ const styles = StyleSheet.create({
   },
   title: {
     textAlign: "center",
-    marginBottom: 33,
+    marginTop: 20,
+    marginBottom: 30,
     fontSize: 30,
     fontFamily: "Roboto-Medium",
   },
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
     borderColor: "#E8E8E8",
     backgroundColor: "#F6F6F6",
     borderRadius: 8,
-    heigth: 50,
+    height: 50,
     marginBottom: 16,
     paddingLeft: 16,
   },
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: "#FFFFFF",
     fontSize: 16,
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Light",
   },
   containerLink: {
     alignItems: "center",
