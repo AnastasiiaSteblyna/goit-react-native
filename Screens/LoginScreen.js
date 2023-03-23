@@ -39,14 +39,14 @@ export default function LoginScreen({ navigation }) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <ImageBackground
-        style={styles.image}
-        source={require("../assets/images/bg.png")}
+    <ImageBackground
+      style={styles.image}
+      source={require("../assets/images/bg.png")}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "heigth"}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "heigth"}
-        >
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.container}>
             <View style={{ ...styles.form, width: dimensions }}>
               <Text style={styles.title}>Войти</Text>
@@ -89,9 +89,9 @@ export default function LoginScreen({ navigation }) {
               </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 

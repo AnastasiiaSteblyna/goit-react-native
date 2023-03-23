@@ -40,14 +40,14 @@ export default function RegistrationScreen({ navigation }) {
   }, []);
 
   return (
-    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-      <ImageBackground
-        style={styles.image}
-        source={require("../assets/images/bg.png")}
+    <ImageBackground
+      style={styles.image}
+      source={require("../assets/images/bg.png")}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.container}>
             <View style={{ ...styles.form, width: dimensions }}>
               <Text style={styles.title}>Реєстрація</Text>
@@ -98,9 +98,9 @@ export default function RegistrationScreen({ navigation }) {
               </TouchableOpacity>
             </View>
           </View>
-        </KeyboardAvoidingView>
-      </ImageBackground>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+      </KeyboardAvoidingView>
+    </ImageBackground>
   );
 }
 
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     fontFamily: "Roboto-Medium",
   },
   form: {
-    justifyContent: "flex-start",
+    justifyContent: "flex-end",
   },
   input: {
     borderWidth: 1,
