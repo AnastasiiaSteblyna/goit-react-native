@@ -10,6 +10,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   Dimensions,
+  Platform,
 } from "react-native";
 
 const initialState = {
