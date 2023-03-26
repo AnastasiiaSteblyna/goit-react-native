@@ -50,7 +50,7 @@
     "@babel/core": "^7.20.0"
   },
   "resolutions": {
-    "react-devtools-core": "4.14.0"
+    "react-devtools-core": "4.22.0"
   },
   "private": true
 }
