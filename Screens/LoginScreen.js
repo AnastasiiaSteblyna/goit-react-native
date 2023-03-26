@@ -20,6 +20,9 @@ const initialState = {
 
 export default function LoginScreen({ navigation }) {
   const [state, setState] = useState(initialState);
+
+  // const [isKeyboardShown, setIsKeyboardShown] = useState(false);
+
   const [dimensions, setDimansions] = useState(
     Dimensions.get("window").width - 16 * 2
   );
@@ -28,7 +31,13 @@ export default function LoginScreen({ navigation }) {
     Keyboard.dismiss();
     console.log(state);
     setState(initialState);
+    navigation.navigate("Home");
   };
+
+  // const touchableKeyboard = () => {
+  //   setIsKeyboardShown(false);
+  //   Keyboard.dismiss();
+  // };
 
   useEffect(() => {
     const onChange = () => {
@@ -50,7 +59,7 @@ export default function LoginScreen({ navigation }) {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.container}>
             <View style={{ ...styles.form, width: dimensions }}>
-              <Text style={styles.title}>Войти</Text>
+              <Text style={styles.title}>Увійти</Text>
               <View>
                 <TextInput
                   style={styles.input}
@@ -75,7 +84,7 @@ export default function LoginScreen({ navigation }) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.button}
-                onPress={keyboardHide}
+                onPress={() => navigation.navigate("Home")}
               >
                 <Text style={styles.textButton}>Увійти</Text>
               </TouchableOpacity>

@@ -86,7 +86,7 @@ export default function RegistrationScreen({ navigation }) {
               <TouchableOpacity
                 activeOpacity={0.8}
                 style={styles.button}
-                onPress={keyboardHide}
+                onPress={() => navigation.navigate("Home")}
               >
                 <Text style={styles.textButton}>Зареєструватися</Text>
               </TouchableOpacity>

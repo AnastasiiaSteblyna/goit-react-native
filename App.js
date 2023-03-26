@@ -8,8 +8,11 @@ import { StyleSheet, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import LoginScreen from "./Screens/LoginScreen";
 import RegistrationScreen from "./Screens/RegistrationScreen";
+import Home from "./Screens/Main/Home";
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
@@ -41,6 +44,7 @@ export default function App() {
   }
 
   const AuthStack = createNativeStackNavigator();
+  const MainTab = createBottomTabNavigator();
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
@@ -48,13 +52,18 @@ export default function App() {
         <AuthStack.Navigator>
           <AuthStack.Screen
             options={{ headerShown: false }}
+            name="Login"
+            component={LoginScreen}
+          />
+          <AuthStack.Screen
+            options={{ headerShown: false }}
             name="Registration"
             component={RegistrationScreen}
           />
           <AuthStack.Screen
             options={{ headerShown: false }}
-            name="Login"
-            component={LoginScreen}
+            name="Home"
+            component={Home}
           />
         </AuthStack.Navigator>
       </NavigationContainer>
