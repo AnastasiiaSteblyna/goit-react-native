@@ -72,14 +72,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   loadBtn: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Light",
     fontSize: 16,
     color: "#BDBDBD",
     marginBottom: 32,
   },
   inputTitle: {
     width: "100%",
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Light",
     fontSize: 16,
     color: "#212121",
   },
@@ -100,7 +100,7 @@ const styles = StyleSheet.create({
     borderRadius: 100,
   },
   submitTitle: {
-    fontFamily: "Roboto-Regular",
+    fontFamily: "Roboto-Light",
     fontSize: 16,
     color: "#BDBDBD",
   },
