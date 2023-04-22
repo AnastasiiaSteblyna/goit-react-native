@@ -1,55 +1,52 @@
 import React from "react";
+import { MaterialIcons } from "@expo/vector-icons";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { Pressable } from "react-native";
 
-import { View, Text, StyleSheet, Image, SafeAreaView } from "react-native";
+import { DefaultPostsScreen } from "../Main/DefaultPostsScreen";
+import { MapScreen } from "../Main/MapScreen";
+import { CommentsScreen } from "../Main/CommentsScreen";
 
-export const PostsScreen = () => {
+const NestedScreen = createNativeStackNavigator();
+
+export const PostsScreen = ({ navigation }) => {
   return (
-    <View style={styles.container}>
-      <View style={styles.avatarContainer}>
-        <View>
-          <Image
-            source={require("../../assets/images/bg.png")}
-            style={styles.avatar}
-          />
-        </View>
-        <View style={styles.userInfo}>
-          <Text style={styles.username}>Люблю Гори</Text>
-          <Text style={styles.userEmail}>email@example.com</Text>
-        </View>
-      </View>
-      <SafeAreaView style={{ flex: 1 }}></SafeAreaView>
-    </View>
+    <NestedScreen.Navigator initialRouteName="DefaultScreen">
+      <NestedScreen.Screen
+        name="DefaultScreen"
+        component={DefaultPostsScreen}
+        options={{
+          headerTitle: "Posts",
+          headerTitleStyle: {
+            fontSize: 17,
+            fontFamily: "Roboto-Medium",
+            color: "#212121",
+          },
+          headerRight: () => (
+            <Pressable
+              onPress={() => navigation.navigate("Login")}
+              style={{ position: "absolute", right: 16 }}
+            >
+              <MaterialIcons name="logout" size={24} color="#BDBDBD" />
+            </Pressable>
+          ),
+          headerStyle: {
+            borderBottomWidth: 0.3,
+            borderBottomColor: "#B3B3B3",
+          },
+          headerTitleAlign: "center",
+        }}
+      />
+      <NestedScreen.Screen
+        name="Map"
+        component={MapScreen}
+        options={{ headerTitleAlign: "center" }}
+      />
+      <NestedScreen.Screen
+        name="Comments"
+        component={CommentsScreen}
+        options={{ headerTitleAlign: "center" }}
+      />
+    </NestedScreen.Navigator>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 16,
-  },
-  avatarContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 32,
-    marginBottom: 32,
-  },
-  avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 16,
-  },
-  userInfo: {
-    marginLeft: 8,
-  },
-  username: {
-    fontFamily: "Roboto-Medium",
-    fontSize: 13,
-    color: "#212121",
-  },
-  userEmail: {
-    fontFamily: "Roboto-Light",
-    fontSize: 11,
-    color: "rgba(33, 33, 33, 0.8)",
-  },
-});
