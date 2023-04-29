@@ -34,6 +34,7 @@ export const CreatePostScreen = ({ navigation }) => {
   const [location, setLocation] = useState(null);
   const [isKeyboardShown, setIsKeyboardShown] = useState(false);
   const [coords, setCoords] = useState(null);
+  const [country, setCountry] = useState(null);
 
   const toast = useToast();
 
@@ -48,6 +49,11 @@ export const CreatePostScreen = ({ navigation }) => {
     const hideSubscription = Keyboard.addListener("keyboardDidHide", () => {
       setIsKeyboardShown(false);
     });
+    (async () => {
+      const location = await Location.getCurrentPositionAsync();
+      setCoords(location);
+    })();
+
     return () => {
       showSubscription.remove();
       hideSubscription.remove();
@@ -71,30 +77,20 @@ export const CreatePostScreen = ({ navigation }) => {
     );
   }
 
-  const getAddress = async () => {
+  const pickImage = async () => {
     try {
-      const address = await Location.reverseGeocodeAsync({
-        latitude: coords.coords.latitude,
-        longitude: coords.coords.longitude,
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.All,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
       });
-      setLocation(`${address[0].city}, ${address[0].country}`);
-      setCountry(address[0].country);
+
+      if (!result.canceled) {
+        setPhoto(result.assets[0].uri);
+      }
     } catch (error) {
       console.log(error);
-    }
-  };
-
-  const pickImage = async () => {
-    // No permissions request is necessary for launching the image library
-    let result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.All,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-    if (!result.canceled) {
-      setIsPhoto(true);
-      setPhoto(result.assets[0].uri);
     }
   };
 
@@ -102,6 +98,20 @@ export const CreatePostScreen = ({ navigation }) => {
     setType((current) =>
       current === CameraType.back ? CameraType.front : CameraType.back
     );
+  };
+
+  const getAddress = async () => {
+    try {
+      const { latitude, longitude } = coords.coords;
+      const address = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+      setLocation(`${address[0].city}, ${address[0].country}`);
+      setCountry(address[0].country);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const takePhoto = async () => {
@@ -115,7 +125,6 @@ export const CreatePostScreen = ({ navigation }) => {
   };
 
   const resetPhotoState = () => {
-    setIsPhoto(false);
     setPhoto(null);
     setLocation("");
   };
@@ -159,7 +168,7 @@ export const CreatePostScreen = ({ navigation }) => {
               />
               <View
                 style={{
-                  ...styles.icnoBg,
+                  ...styles.iconBg,
                   position: "absolute",
                   backgroundColor: "rgba(255, 255, 255, 0.3);",
                 }}
@@ -175,7 +184,7 @@ export const CreatePostScreen = ({ navigation }) => {
               type={type}
               ref={(ref) => setCameraRef(ref)}
             >
-              <View style={styles.icnoBg}>
+              <View style={styles.iconBg}>
                 <TouchableOpacity onPress={takePhoto}>
                   <FontAwesome name="camera" size={24} color="#BDBDBD" />
                 </TouchableOpacity>
