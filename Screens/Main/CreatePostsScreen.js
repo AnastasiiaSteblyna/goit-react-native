@@ -53,10 +53,12 @@ export const CreatePostScreen = ({ navigation }) => {
       hideSubscription.remove();
     };
   }, []);
+
   if (!permission) {
     // Camera permissions are still loading
     return <View />;
   }
+
   if (!permission.granted) {
     // Camera permissions are not granted yet
     return (
@@ -69,9 +71,17 @@ export const CreatePostScreen = ({ navigation }) => {
     );
   }
 
-  const getCoords = async () => {
-    const location = await Location.getCurrentPositionAsync();
-    setCoords(location);
+  const getAddress = async () => {
+    try {
+      const address = await Location.reverseGeocodeAsync({
+        latitude: coords.coords.latitude,
+        longitude: coords.coords.longitude,
+      });
+      setLocation(`${address[0].city}, ${address[0].country}`);
+      setCountry(address[0].country);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const pickImage = async () => {
@@ -87,21 +97,27 @@ export const CreatePostScreen = ({ navigation }) => {
       setPhoto(result.assets[0].uri);
     }
   };
+
   const toggleCameraType = () => {
     setType((current) =>
       current === CameraType.back ? CameraType.front : CameraType.back
     );
   };
+
   const takePhoto = async () => {
-    const photo = await cameraRef.takePictureAsync();
-    setPhoto(photo.uri);
-    setIsPhoto(true);
-    getCoords();
+    try {
+      const photo = await cameraRef.takePictureAsync();
+      setPhoto(photo.uri);
+      getAddress();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const resetPhotoState = () => {
     setIsPhoto(false);
     setPhoto(null);
+    setLocation("");
   };
 
   const onSubmit = () => {
