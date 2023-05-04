@@ -1,4 +1,12 @@
 import { useEffect, useState } from "react";
+import { db } from "../../firebase/config";
+import {
+  collection,
+  query,
+  onSnapshot,
+  orderBy,
+  getCountFromServer,
+} from "firebase/firestore";
 import {
   View,
   Text,
@@ -7,30 +15,38 @@ import {
   FlatList,
   SafeAreaView,
 } from "react-native";
+import { useSelector } from "react-redux";
 
 import { PostsScreenCard } from "../../components/PostsScreenCard";
 
-export const DefaultPostsScreen = ({ route, navigation }) => {
+export const DefaultPostsScreen = ({ navigation }) => {
   const [posts, setPosts] = useState([]);
 
+  const { nickname, email, avatar } = useSelector((state) => state.auth);
+
   useEffect(() => {
-    if (route.params) {
-      setPosts((prevState) => [route.params, ...prevState]);
-    }
-  }, [route.params]);
+    const q = query(collection(db, "posts"), orderBy("date", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const allPosts = [];
+      querySnapshot.forEach((doc) => {
+        allPosts.push({ ...doc.data(), id: doc.id });
+      });
+      setPosts(allPosts);
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarContainer}>
         <View>
-          <Image
-            source={require("../../assets/images/bg.png")}
-            style={styles.avatar}
-          />
+          <Image source={{ uri: avatar }} style={styles.avatar} />
         </View>
         <View style={styles.userInfo}>
-          <Text style={styles.username}>Люблю гори</Text>
-          <Text style={styles.userEmail}>email@mail.com</Text>
+          <Text style={styles.username}>{nickname}</Text>
+          <Text style={styles.userEmail}>{email}</Text>
         </View>
       </View>
       <SafeAreaView style={{ flex: 1 }}>
@@ -43,6 +59,8 @@ export const DefaultPostsScreen = ({ route, navigation }) => {
               location={item.location}
               navigation={navigation}
               coords={item.coords}
+              postId={item.id}
+              likes={item.like}
             />
           )}
           keyExtractor={(item) => item.id}

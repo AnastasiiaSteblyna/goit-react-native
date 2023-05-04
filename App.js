@@ -1,81 +1,44 @@
-import React, { useCallback, useEffect, useState } from "react";
-
-import * as SplashScreen from "expo-splash-screen";
+import { store } from "./redux/store";
+import Toast from "react-native-toast-message";
 import * as Font from "expo-font";
 import { StatusBar } from "expo-status-bar";
-import { StyleSheet, View } from "react-native";
+import { useEffect, useState } from "react";
+import * as SplashScreen from "expo-splash-screen";
+import { Provider } from "react-redux";
+import { Home } from "./Screens/Main/Home";
 
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import { ToastProvider } from "react-native-toast-notifications";
-
-import LoginScreen from "./Screens/LoginScreen";
-import RegistrationScreen from "./Screens/RegistrationScreen";
-import Home from "./Screens/Main/Home";
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
+    async function loadFonts() {
       try {
         await Font.loadAsync({
-          "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
           "Roboto-Light": require("./assets/fonts/Roboto-Light.ttf"),
+          "Roboto-Medium": require("./assets/fonts/Roboto-Medium.ttf"),
         });
-      } catch (e) {
-        console.warn(e);
+        SplashScreen.hideAsync();
+      } catch (error) {
+        console.log(error);
       } finally {
         setIsReady(true);
+        SplashScreen.hideAsync();
       }
     }
-    prepare();
+    loadFonts();
   }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (isReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [isReady]);
 
   if (!isReady) {
     return null;
   }
 
-  const AuthStack = createNativeStackNavigator();
-
   return (
-    <ToastProvider>
-      <View style={styles.container} onLayout={onLayoutRootView}>
-        <NavigationContainer>
-          <AuthStack.Navigator>
-            <AuthStack.Screen
-              options={{ headerShown: false }}
-              name="Registration"
-              component={RegistrationScreen}
-            />
-            <AuthStack.Screen
-              options={{ headerShown: false }}
-              name="Login"
-              component={LoginScreen}
-            />
-            <AuthStack.Screen
-              name="Home"
-              component={Home}
-              options={{ headerShown: false }}
-            />
-          </AuthStack.Navigator>
-        </NavigationContainer>
-        <StatusBar style="auto" />
-      </View>
-    </ToastProvider>
+    <Provider store={store}>
+      <Home />
+      <StatusBar style="auto" />
+      <Toast />
+    </Provider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});

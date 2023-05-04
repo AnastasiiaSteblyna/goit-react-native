@@ -1,17 +1,21 @@
-import React from "react";
-import { MaterialIcons } from "@expo/vector-icons";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { authSingOutUser } from "../../redux/auth/operations";
+import { useDispatch } from "react-redux";
+import { createStackNavigator } from "@react-navigation/stack";
+import { DefaultPostsScreen } from "./DefaultPostsScreen";
+import { MapScreen } from "./MapScreen";
+import { CommentsScreen } from "./CommentsScreen";
+
 import { Pressable } from "react-native";
 
-import { DefaultPostsScreen } from "../Main/DefaultPostsScreen";
-import { MapScreen } from "../Main/MapScreen";
-import { CommentsScreen } from "../Main/CommentsScreen";
+import { MaterialIcons } from "@expo/vector-icons";
 
-const NestedScreen = createNativeStackNavigator();
+const NestedScreen = createStackNavigator();
 
 export const PostsScreen = ({ navigation }) => {
+  const dispatch = useDispatch();
+
   return (
-    <NestedScreen.Navigator initialRouteName="DefaultScreen">
+    <NestedScreen.Navigator initialRouteName="Posts">
       <NestedScreen.Screen
         name="DefaultScreen"
         component={DefaultPostsScreen}
@@ -22,9 +26,10 @@ export const PostsScreen = ({ navigation }) => {
             fontFamily: "Roboto-Medium",
             color: "#212121",
           },
+          headerLeft: false,
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate("Login")}
+              onPress={() => dispatch(authSingOutUser())}
               style={{ position: "absolute", right: 16 }}
             >
               <MaterialIcons name="logout" size={24} color="#BDBDBD" />

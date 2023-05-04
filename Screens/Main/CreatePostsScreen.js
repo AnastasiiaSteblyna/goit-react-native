@@ -1,8 +1,10 @@
-import React from "react";
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { Camera, CameraType } from "expo-camera";
 import * as Location from "expo-location";
-
+import { uploadBytes, ref, getDownloadURL } from "firebase/storage";
+import { storage, db } from "../../firebase/config";
+import { collection, addDoc } from "firebase/firestore";
 import {
   View,
   Text,
@@ -16,19 +18,17 @@ import {
   Image,
   KeyboardAvoidingView,
 } from "react-native";
-
 import * as ImagePicker from "expo-image-picker";
-import uuid from "react-native-uuid";
-import { MaterialIcons } from "@expo/vector-icons";
-import { useToast } from "react-native-toast-notifications";
+import Toast from "react-native-toast-message";
+
 import { FontAwesome } from "@expo/vector-icons";
 import { Feather } from "@expo/vector-icons";
+import { MaterialIcons } from "@expo/vector-icons";
 
 export const CreatePostScreen = ({ navigation }) => {
   const [type, setType] = useState(CameraType.back);
   const [permission, requestPermission] = Camera.useCameraPermissions();
   const [cameraRef, setCameraRef] = useState(null);
-  const [isPhoto, setIsPhoto] = useState(false);
   const [photo, setPhoto] = useState(null);
   const [title, setTitle] = useState("");
   const [location, setLocation] = useState(null);
@@ -36,7 +36,7 @@ export const CreatePostScreen = ({ navigation }) => {
   const [coords, setCoords] = useState(null);
   const [country, setCountry] = useState(null);
 
-  const toast = useToast();
+  const { userId, nickname } = useSelector((state) => state.auth);
 
   useEffect(() => {
     (async () => {
@@ -129,23 +129,51 @@ export const CreatePostScreen = ({ navigation }) => {
     setLocation("");
   };
 
-  const onSubmit = () => {
-    if (title === "" ?? photo) {
-      return toast.show("Фото та заголовок обовʼязкові", {
-        type: "warning",
-        placement: "bottom",
-        duration: 2000,
-        offset: 30,
-      });
+  const uploadPhoto = async () => {
+    try {
+      // Uploading photo
+      const response = await fetch(photo);
+      const file = await response.blob();
+      await uploadBytes(ref(storage, `photos/${file._data.blobId}`), file);
+      // get photo url
+      const photoUrl = await getDownloadURL(
+        ref(storage, `photos/${file._data.blobId}`)
+      );
+      return photoUrl;
+    } catch (error) {
+      console.log(error);
     }
+  };
 
-    navigation.navigate("DefaultScreen", {
-      id: uuid.v4(),
-      photo,
-      title,
-      location,
-      coords,
-    });
+  const uploadPost = async () => {
+    try {
+      const photo = await uploadPhoto();
+      console.log(photo);
+      await addDoc(collection(db, "posts"), {
+        userId,
+        nickname,
+        photo,
+        title,
+        location,
+        coords: coords.coords,
+        date: Date.now().toString(),
+        country,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onSubmit = () => {
+    if (photo === null && location === "") {
+      Toast.show({
+        type: "error",
+        text1: "Відсутнє фото або заголовок",
+      });
+      return;
+    }
+    uploadPost();
+    navigation.navigate("DefaultScreen");
     resetPhotoState();
     setTitle("");
     setLocation("");
@@ -155,7 +183,7 @@ export const CreatePostScreen = ({ navigation }) => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
         <View style={{ display: isKeyboardShown ? "none" : "flex" }}>
-          {isPhoto ? (
+          {photo ? (
             <View style={{ justifyContent: "center", alignItems: "center" }}>
               <Image
                 style={{
@@ -203,7 +231,7 @@ export const CreatePostScreen = ({ navigation }) => {
         </View>
         <TouchableOpacity onPress={pickImage} style={{ width: 100 }}>
           <Text style={styles.loadBtnText}>
-            {photo ? "Редагувати фото" : "Завантажити фото"}
+            {photo ? "Edit a photo" : "Load a photo"}
           </Text>
         </TouchableOpacity>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : ""}>
@@ -212,7 +240,7 @@ export const CreatePostScreen = ({ navigation }) => {
               value={title}
               onChangeText={(text) => setTitle(text)}
               style={styles.inputTitle}
-              placeholder="Заголовок..."
+              placeholder="Title..."
               placeholderTextColor="#BDBDBD"
             />
           </View>
@@ -222,7 +250,7 @@ export const CreatePostScreen = ({ navigation }) => {
               value={location}
               onChangeText={(text) => setLocation(text)}
               style={{ ...styles.inputTitle, marginLeft: 4 }}
-              placeholder="Локація..."
+              placeholder="Location..."
               placeholderTextColor="#BDBDBD"
             />
           </View>
@@ -231,7 +259,6 @@ export const CreatePostScreen = ({ navigation }) => {
           style={{
             ...styles.submitBtn,
             backgroundColor: photo ? "#FF6C00" : "#F6F6F6",
-            display: isKeyboardShown ? "none" : "flex",
           }}
           onPress={onSubmit}
         >
@@ -241,7 +268,7 @@ export const CreatePostScreen = ({ navigation }) => {
               color: photo ? "#FFFFFF" : "#BDBDBD",
             }}
           >
-            Опублікувати
+            Post
           </Text>
         </TouchableOpacity>
       </View>
